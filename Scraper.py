@@ -6,10 +6,10 @@ import time
 
 
 class Scraper:
-    DEFAULT_PROJECT_AMOUNT = 36
+    DEFAULT_PROJECT_AMOUNT = 24
     PROJECTS_PER_PAGE = 12
     WAITING_TIME = 2
-    KIKSTARTER_URL = 'https://www.kickstarter.com/discover/categories/technology'
+    KICKSTARTER_URL = 'https://www.kickstarter.com/discover/categories/technology'
     CREATOR_XPATH = '//*[@class="type-14 bold"]/text()'
     TITLE_XPATH = '//*[@class="type-28 type-24-md soft-black mb1 project-name"]/text()'
     DOLLARS_PLEDGED_XPATH = '//*[@class="ksr-green-500"]/text()'
@@ -45,7 +45,7 @@ class Scraper:
         :return:
         """
         print("Collecting links...")
-        self.__driver.get(self.KIKSTARTER_URL)
+        self.__driver.get(self.KICKSTARTER_URL)
         self.__load_all_projects_divs()
         project_divs = self.__driver.find_elements_by_xpath(self.PROJECT_LINK_XPATH)
 
@@ -90,7 +90,7 @@ class Scraper:
         self.__generate_projects_links()
         data = self.__create_projects_dictionary()
         with open("results.json", 'w') as results_file:
-            json.dump(data, results_file, indent=4)
+            json.dump(data, results_file, ensure_ascii=False, indent=4)
         print("Finished scraping.")
 
     def __del__(self):
