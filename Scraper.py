@@ -6,7 +6,7 @@ import time
 
 
 class Scraper:
-    DEFAULT_PROJECT_AMOUNT = 24
+    DEFAULT_PROJECT_AMOUNT = 36
     PROJECTS_PER_PAGE = 12
     WAITING_TIME = 2
     KICKSTARTER_URL = 'https://www.kickstarter.com/discover/categories/technology'
@@ -16,8 +16,6 @@ class Scraper:
     DOLLARS_GOAL_XPATH = '//*[@class="money"]/text()'
     NUM_BACKERS_XPATH = '//*[@class="block type-16 type-28-md bold dark-grey-500"]/span/text()'
     DAYS_TO_GO_XPATH = '//*[@class="block type-16 type-28-md bold dark-grey-500"]/text()'
-    ALL_OR_NOTHING_PART1_XPATH = '//*[@class="link-soft-black medium"]/a/text()'
-    ALL_OR_NOTHING_PART2_XPATH = '//*[@class="mb3 mb0-lg type-12"]/span/text()'
     PROJECT_LINK_XPATH = '//*[@class="clamp-5 navy-500 mb3 hover-target"]'
     LOAD_MORE_BUTTON_XPATH = '//*[@class="bttn bttn-green bttn-medium"]'
 
@@ -64,13 +62,11 @@ class Scraper:
         project_data['url'] = project_link
         project_data['Creator'] = Selector(text=project_html).xpath(self.CREATOR_XPATH).get()
         project_data['Title'] = Selector(text=project_html).xpath(self.TITLE_XPATH).get()
-        # project_data['Text'] = project_html           todo: uncomment before final execution.
+        project_data['Text'] = project_html
         project_data['DollarsPledged'] = Selector(text=project_html).xpath(self.DOLLARS_PLEDGED_XPATH).get()
         project_data['DollarsGoal'] = Selector(text=project_html).xpath(self.DOLLARS_GOAL_XPATH).get()
         project_data['NumBackers'] = Selector(text=project_html).xpath(self.NUM_BACKERS_XPATH).get()
         project_data['DaysToGo'] = Selector(text=project_html).xpath(self.DAYS_TO_GO_XPATH).get()
-        project_data['AllOrNothing'] = Selector(text=project_html).xpath(self.ALL_OR_NOTHING_PART1_XPATH).get()
-        project_data['AllOrNothing'] += " " + Selector(text=project_html).xpath(self.ALL_OR_NOTHING_PART2_XPATH).get()
         print("Created a dictionary for project " + str(project_id) + " out of " + str(self.DEFAULT_PROJECT_AMOUNT))
         return project_data
 
@@ -89,7 +85,7 @@ class Scraper:
         print("Start scraping...")
         self.__generate_projects_links()
         data = self.__create_projects_dictionary()
-        with open("results.json", 'w') as results_file:
+        with open("results.json", 'w', encoding='utf8') as results_file:
             json.dump(data, results_file, ensure_ascii=False, indent=4)
         print("Finished scraping.")
 
