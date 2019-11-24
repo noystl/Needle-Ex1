@@ -6,7 +6,7 @@ import time
 
 
 class Scraper:
-    DEFAULT_PROJECT_AMOUNT = 12
+    DEFAULT_PROJECT_AMOUNT = 300
     PROJECTS_PER_PAGE = 12
     WAITING_TIME = 2
     HOURS_IN_DAY = 24.0
@@ -63,6 +63,10 @@ class Scraper:
             return str(float(time_left) / self.HOURS_IN_DAY)
         return time_left
 
+    # def __remove_delimiter(self, scrap_result):
+    #     if 'Delimiter' in scrap_result:
+    #
+
     def __parse_project_page(self, project_link, project_id):
         project_data = {}
         self.__driver.get(project_link)
@@ -72,11 +76,11 @@ class Scraper:
         project_data['url'] = project_link
         project_data['Creator'] = Selector(text=project_html).xpath(self.CREATOR_XPATH).get()
         project_data['Title'] = Selector(text=project_html).xpath(self.TITLE_XPATH).get()
-        # project_data['Text'] = project_html               # todo: uncomment when finnish testing
-        project_data['DollarsPledged'] = Selector(text=project_html).xpath(self.DOLLARS_PLEDGED_XPATH).get()
-        project_data['DollarsGoal'] = Selector(text=project_html).xpath(self.DOLLARS_GOAL_XPATH).get()
-        project_data['NumBackers'] = Selector(text=project_html).xpath(self.NUM_BACKERS_XPATH).get()
-        project_data['DaysToGo'] = self.__extract_days_to_go(project_html)
+        project_data['Text'] = project_html
+        project_data['DollarsPledged'] = Selector(text=project_html).xpath(self.DOLLARS_PLEDGED_XPATH).get().replace('Delimiter', ',')
+        project_data['DollarsGoal'] = Selector(text=project_html).xpath(self.DOLLARS_GOAL_XPATH).get().replace('Delimiter', ',')
+        project_data['NumBackers'] = Selector(text=project_html).xpath(self.NUM_BACKERS_XPATH).get().replace('Delimiter', ',')
+        project_data['DaysToGo'] = self.__extract_days_to_go(project_html).replace('Delimiter', ',')
         print("Created a dictionary for project " + str(project_id) + " out of " + str(self.DEFAULT_PROJECT_AMOUNT))
         return project_data
 
