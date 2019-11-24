@@ -6,16 +6,18 @@ import time
 
 
 class Scraper:
-    DEFAULT_PROJECT_AMOUNT = 36
+    DEFAULT_PROJECT_AMOUNT = 12
     PROJECTS_PER_PAGE = 12
     WAITING_TIME = 2
+    HOURS_IN_DAY = 24.0
     KICKSTARTER_URL = 'https://www.kickstarter.com/discover/categories/technology'
     CREATOR_XPATH = '//*[@class="type-14 bold"]/text()'
     TITLE_XPATH = '//*[@class="type-28 type-24-md soft-black mb1 project-name"]/text()'
     DOLLARS_PLEDGED_XPATH = '//*[@class="ksr-green-500"]/text()'
     DOLLARS_GOAL_XPATH = '//*[@class="money"]/text()'
     NUM_BACKERS_XPATH = '//*[@class="block type-16 type-28-md bold dark-grey-500"]/span/text()'
-    DAYS_TO_GO_XPATH = '//*[@class="block type-16 type-28-md bold dark-grey-500"]/text()'
+    TIME_LEFT_XPATH = '//*[@class="block type-16 type-28-md bold dark-grey-500"]/text()'
+    TIME_TYPE_XPATH = '//*[@class="block navy-600 type-12 type-14-md lh3-lg"]/text()'
     PROJECT_LINK_XPATH = '//*[@class="clamp-5 navy-500 mb3 hover-target"]'
     LOAD_MORE_BUTTON_XPATH = '//*[@class="bttn bttn-green bttn-medium"]'
 
@@ -54,19 +56,27 @@ class Scraper:
 
         print("Finished collecting " + str(len(self.__links)) + " links.")
 
+    def __extract_days_to_go(self, html):
+        time_type = Selector(text=html).xpath(self.TIME_TYPE_XPATH).get()
+        time_left = Selector(text=html).xpath(self.TIME_LEFT_XPATH).get()
+        if time_type.startswith('hours'):
+            return str(float(time_left) / self.HOURS_IN_DAY)
+        return time_left
+
     def __parse_project_page(self, project_link, project_id):
         project_data = {}
         self.__driver.get(project_link)
+        time.sleep(self.WAITING_TIME)
         project_html = self.__driver.page_source
         project_data['id'] = project_id
         project_data['url'] = project_link
         project_data['Creator'] = Selector(text=project_html).xpath(self.CREATOR_XPATH).get()
         project_data['Title'] = Selector(text=project_html).xpath(self.TITLE_XPATH).get()
-        project_data['Text'] = project_html
+        # project_data['Text'] = project_html               # todo: uncomment when finnish testing
         project_data['DollarsPledged'] = Selector(text=project_html).xpath(self.DOLLARS_PLEDGED_XPATH).get()
         project_data['DollarsGoal'] = Selector(text=project_html).xpath(self.DOLLARS_GOAL_XPATH).get()
         project_data['NumBackers'] = Selector(text=project_html).xpath(self.NUM_BACKERS_XPATH).get()
-        project_data['DaysToGo'] = Selector(text=project_html).xpath(self.DAYS_TO_GO_XPATH).get()
+        project_data['DaysToGo'] = self.__extract_days_to_go(project_html)
         print("Created a dictionary for project " + str(project_id) + " out of " + str(self.DEFAULT_PROJECT_AMOUNT))
         return project_data
 
