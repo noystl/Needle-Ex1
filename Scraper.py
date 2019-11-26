@@ -20,6 +20,8 @@ class Scraper:
     TIME_TYPE_XPATH = '//*[@class="block navy-600 type-12 type-14-md lh3-lg"]/text()'
     PROJECT_LINK_XPATH = '//*[@class="clamp-5 navy-500 mb3 hover-target"]'
     LOAD_MORE_BUTTON_XPATH = '//*[@class="bttn bttn-green bttn-medium"]'
+# TODO:
+    DESCRIPTION_XPATH = '//*[@class="type-14 type-18-md soft-black project-description mb1"]/text()'
 
     def __init__(self, amount_to_load=DEFAULT_PROJECT_AMOUNT):
         """
@@ -49,8 +51,14 @@ class Scraper:
         self.__load_all_projects_divs()
         project_divs = self.__driver.find_elements_by_xpath(self.PROJECT_LINK_XPATH)
 
-        for element in project_divs:
-            inner_html = element.get_attribute('innerHTML')
+    # TODO:  gets the data of DEFAULT_PROJECT_AMOUNT projects:
+        # for element in project_divs:
+        #     inner_html = element.get_attribute('innerHTML')
+        #     link = inner_html.split("\"")[1]
+        #     self.__links.add(link)
+
+        for i in range(self.DEFAULT_PROJECT_AMOUNT):
+            inner_html = project_divs[i].get_attribute('innerHTML')
             link = inner_html.split("\"")[1]
             self.__links.add(link)
 
@@ -76,7 +84,10 @@ class Scraper:
         project_data['url'] = project_link
         project_data['Creator'] = Selector(text=project_html).xpath(self.CREATOR_XPATH).get()
         project_data['Title'] = Selector(text=project_html).xpath(self.TITLE_XPATH).get()
-        project_data['Text'] = project_html
+    # TODO:
+        # project_data['Text'] = project_html
+        project_data['Text'] = Selector(text=project_html).xpath(self.DESCRIPTION_XPATH).get()
+
         project_data['DollarsPledged'] = Selector(text=project_html).xpath(self.DOLLARS_PLEDGED_XPATH).get().replace('Delimiter', ',')
         project_data['DollarsGoal'] = Selector(text=project_html).xpath(self.DOLLARS_GOAL_XPATH).get().replace('Delimiter', ',')
         project_data['NumBackers'] = Selector(text=project_html).xpath(self.NUM_BACKERS_XPATH).get().replace('Delimiter', ',')
