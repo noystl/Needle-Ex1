@@ -13,23 +13,14 @@ class Scraper:
     WAITING_TIME = 2
     HOURS_IN_DAY = 24.0
     KICKSTARTER_URL = 'https://www.kickstarter.com/discover/categories/technology'
-    # Creator field:
     CREATOR_XPATH = '//*[@class="type-14 bold"]/text()'
-    # Title field:
     TITLE_XPATH = '//*[@class="type-28 type-24-md soft-black mb1 project-name"]/text()'
-    # Dollars Pledged field:
     DOLLARS_PLEDGED_XPATH = '//*[@class="ksr-green-500"]/text()'
-    # Dollars goal field:
     DOLLARS_GOAL_XPATH = '//*[@class="money"]/text()'
-    # Num Bakers field:
     NUM_BACKERS_XPATH = '//*[@class="block type-16 type-28-md bold dark-grey-500"]/span/text()'
-    # Days To Go field:
     TIME_LEFT_XPATH = '//*[@class="block type-16 type-28-md bold dark-grey-500"]/text()'
     TIME_TYPE_XPATH = '//*[@class="block navy-600 type-12 type-14-md lh3-lg"]/text()'
-
-    # Find projects:
     PROJECT_LINK_XPATH = '//*[@class="clamp-5 navy-500 mb3 hover-target"]'
-    # Load More pages of projects:
     LOAD_MORE_BUTTON_XPATH = '//*[@class="bttn bttn-green bttn-medium"]'
 
     def __init__(self, amount_to_load=DEFAULT_PROJECT_AMOUNT):
@@ -44,7 +35,7 @@ class Scraper:
 
     def __load_all_projects_divs(self):
         """
-        Clicks on the "load more" button until the page contains enough project divs.
+        Clicks on the "load more" button until the page contains enough projects.
         """
         clicks_required = int(math.ceil(self.DEFAULT_PROJECT_AMOUNT / self.PROJECTS_PER_PAGE))
         for i in range(clicks_required):
@@ -69,7 +60,7 @@ class Scraper:
 
     def __extract_days_to_go(self, html):
         """
-        Computes the days left to the project. More specifically,  If the the project displays
+        Computes the days left to the project. More specifically, If the the project displays
         it's time by hours, it will converts it to days.
         :param html: the projects text (html).
         :return: the time left foe the project to close, in days.
@@ -86,7 +77,7 @@ class Scraper:
 
     def __parse_project_page(self, project_link, project_id):
         """
-        Collects all of the project page relevant data: Id, Url, Creator, Title, Text , DollarsPledged, DollarsGoal,
+        Collects all of the project page relevant data: Creator, Title, Text , DollarsPledged, DollarsGoal,
         NumBackers, DaysToGo.
         :param project_link: the project's link.
         :param project_id: the projects id- non zero int.
@@ -137,7 +128,7 @@ class Scraper:
 
     def __del__(self):
         """
-        Closes the driver. Must be called as a destructor.
+        Closes the driver.
         """
         self.__driver.close()
 
